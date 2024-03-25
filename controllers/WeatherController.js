@@ -5,7 +5,6 @@ class Weather {
         try {
             const forecast = await WeatherData.findAll({
                 order: [['createdAt', 'DESC']],
-                limit: 10
             });
             res.json(forecast);
         }
