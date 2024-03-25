@@ -7,16 +7,21 @@ const udpServer = dgram.createSocket('udp4');
 const UDP_PORT = process.env.UDP_PORT;
 
 udpServer.on('error', (err) => {
-    console.error(`UDP Server error:\n${err.stack}`);
+    logger.error(`UDP Server error:\n${err.stack}`);
     udpServer.close();
 });
 
-udpServer.on('message', (msg, rinfo) => {
+udpServer.on('message',async (msg, rinfo) => {
     const data = JSON.parse(msg.toString());
+    const validIP = await validateIpAddress(rinfo.address);
 
-    if (!validateIpAddress(rinfo.address)) {
-        logger.log(`Spoofed IP address detected: ${rinfo.address}`)
-        // console.log(`Spoofed IP address detected: ${rinfo.address}`);
+    if (!validIP.regyes) {
+        const response = await axios.post('http://localhost:3000/manage/blacklistip', { ip: ipAddress });
+        if (validIP.blockyes) {
+            logger.info(` Request from Blacklisted IP address detected: ${rinfo.address} \n Please revoke it to process requests.`)
+            return;
+        }
+        logger.error(`Spoofed IP address detected: ${rinfo.address}`);
         return;
     }
 
@@ -25,15 +30,15 @@ udpServer.on('message', (msg, rinfo) => {
         humidity: data.humidity,
         pressure: data.pressure
     }).then(() => {
-        console.log(`Weather data saved from ${rinfo.address}:`, data);
+        logger.info(`Weather data saved from ${rinfo.address}:`, data);
     }).catch((err) => {
-        console.error('Error saving weather data:', err);
+        logger.error('Error saving weather data:', err);
     });
 });
 
 udpServer.on('listening', () => {
     const address = udpServer.address();
-    console.log(`UDP Server listening on ${address.address}:${address.port}`);
+    logger.info(`UDP Server listening on ${address.address}:${address.port}`);
 });
 
 udpServer.bind(UDP_PORT);

@@ -27,7 +27,7 @@ async function verifyToken(req, res, next) {
         // Call the next middleware or route handler
         next();
     } catch (error) {
-        console.error('Error verifying token:', error);
+        logger.error('Error verifying token:', error);
         return res.status(401).json({ error: 'Invalid token' });
     }
 }

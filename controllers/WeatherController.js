@@ -1,6 +1,6 @@
 const WeatherData = require('../models/WeatherData');
 
-class Weather{
+class Weather {
     async getData(req, res) {
         try {
             const forecast = await WeatherData.findAll({
@@ -9,8 +9,8 @@ class Weather{
             });
             res.json(forecast);
         }
-        catch(err){
-            console.error('Error fetching weather data:', err);
+        catch (err) {
+            logger.error('Error fetching weather data:', err);
             res.status(500).json({ error: 'Internal server error' });
         };
     }

@@ -7,6 +7,7 @@ const forecast = require("./routes/forecast");
 const auth = require("./routes/auth")
 const registerip = require("./routes/regip")
 const sequelize = require("./db/database");
+const logger = require('./utilities/Logger');
 sequelize.authenticate().then();
 app.use(bodyParser.json());
 
@@ -18,5 +19,5 @@ app.use("/forecast", forecast);
 app.use("/manage", registerip);
 // Start the Express server
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    logger.info(`Server listening on port ${PORT}`);
 });
