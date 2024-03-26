@@ -1,23 +1,46 @@
 const dgram = require('dgram');
-const logger = require('./Logger');
-const { generateDigitalSignature } = require('../key_auth/digitalsignature');
-const PORT = 3001;
-const HOST = 'localhost';
+const crypto = require('crypto');
+
+// Function to encrypt plaintext using a secret key
+function encrypt(text, secretKey) {
+    const cipher = crypto.createCipher('aes-256-cbc', secretKey);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+}
 
 const client = dgram.createSocket('udp4');
+const secretKey = process.env.SECRET; // Same secret key used for encryption
+const HOST = process.env.HOST;
+const PORT = process.env.UDP_PORT;
 
-const weatherData = {
+const sensorData = {
     temperature: 25,
     humidity: 60,
     pressure: 1013,
-    // sign: 'HEllo123'
 };
 
-// generateDigitalSignature(JSON.stringify(weatherData),"key_auth\\key\\private.pem")
-const message = Buffer.from(JSON.stringify(weatherData));
+// Convert sensorData object to JSON string
+const sensorDataString = JSON.stringify(sensorData);
 
-client.send(message, 0, message.length, PORT, HOST, (err) => {
-    if (err) throw err;
-    logger.info(`Weather data sent to ${HOST}:${PORT}`);
+// Encrypt sensorData JSON string
+const encryptedText = encrypt(sensorDataString, secretKey);
+
+// Send encrypted message to server
+client.send(Buffer.from(encryptedText, 'hex'), PORT, HOST, (err) => {
+    if (err) {
+        console.log('Error sending message:', err);
+    } else {
+        console.log('Encrypted message sent to server');
+    }
+});
+
+client.on('message', (msg, rinfo) => {
+    console.log(`Received decrypted message from server: ${msg}`);
+    client.close();
+});
+
+client.on('error', (err) => {
+    console.log(`Client error:\n${err.stack}`);
     client.close();
 });

@@ -3,20 +3,53 @@ const logger = require("./Logger");
 async function sendOTP(email, otp) {
     try {
         // Create a transporter object using SMTP transport
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
+        let transporter = nodemailer.createTransport({
+            host: 'smtp-relay.brevo.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
             auth: {
-                user: process.env.EMAIL, // Your email address
-                pass: process.env.PASSWORD // Your email password
+                user: process.env.EMAIL,
+                pass: process.env.PASSWORD // replace with actual password
             }
         });
-
+        let htmlContent = `
+  <html>
+    <head>
+      <style>
+        /* Add your CSS styles for email here */
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fff;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .otp {
+          font-size: 24px;
+          color: #007bff;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2>IP Whitelisting</h2>
+        <p>Your OTP for Whitelisting IP is: <span class="otp">${otp}</span></p>
+        <p>Please use this OTP to proceed with the verification process.</p>
+      </div>
+    </body>
+  </html>
+`;
         // Email options
         const mailOptions = {
-            from: process.env.EMAIL, // Sender address
+            from: 'weathermonitor@gmail.com', // Sender address
             to: email, // Recipient address
             subject: 'Your OTP for IP Whitelisting', // Subject line
-            text: `Your OTP for IP Whitelisting is: ${otp}` // Plain text body
+            html: htmlContent // Plain text body
         };
 
         // Send email
