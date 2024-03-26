@@ -8,5 +8,7 @@ router.post('/checkip', regIP.checkIP);
 router.post('/blacklistip', regIP.blacklistIP);
 router.post('/whitelistip', regIP.whitelistIP);
 router.post('/verifyOTP', regIP.verifyOTP);
+router.get('/registeredip', regIP.registeredIP);
+router.get('/blacklistedip', regIP.blacklistedIP);
 
 module.exports = router;

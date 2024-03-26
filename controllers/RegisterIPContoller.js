@@ -87,6 +87,24 @@ class IPController {
             return res.status(500).json({ error: 'Internal server error' });
         }
     }
+    async registeredIP(req, res) {
+        try {
+            const existingIP = await RegisteredIP.findAll();
+            return res.status(200).json(existingIP);
+        } catch (error) {
+            logger.error(error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+    async blacklistedIP(req, res) {
+        try {
+            const blacklisted = await BlacklistedIP.findAll();
+            return res.status(200).json(blacklisted);
+        } catch (error) {
+            logger.error(error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    }
 }
 
 
