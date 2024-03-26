@@ -2,7 +2,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require("../db/database");
 
-    const RegisteredIP = sequelize.define('RegisteredIP', {
+    const RegisteredIP = sequelize.define('RegisteredIPS', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -15,7 +15,7 @@ const sequelize = require("../db/database");
         }
     }, {
         sequelize,
-        tableName: 'registeredip',
+        tableName: 'registeredips',
         timestamps: false
     }
 );

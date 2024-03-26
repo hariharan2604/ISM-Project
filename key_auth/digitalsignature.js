@@ -12,6 +12,8 @@ function readfile(pemFilePath) {
 }
 
 function generateDigitalSignature(data, privateKeypath) {
+  console.log('privateKeypath :14', privateKeypath);
+
   const privateKey = readfile(privateKeypath);
   const sign = crypto.createSign("RSA-SHA256");
   sign.update(data);

@@ -4,7 +4,7 @@ const RegIP = require("../controllers/RegisterIPContoller.js");
 const regIP = new RegIP();
 
 router.post('/registerip', regIP.registerIP);
-router.get('/checkip/:ip', regIP.checkIP);
+router.post('/checkip', regIP.checkIP);
 router.post('/blacklistip', regIP.blacklistIP);
 router.post('/whitelistip', regIP.whitelistIP);
 router.post('/verifyOTP', regIP.verifyOTP);

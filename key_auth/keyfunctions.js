@@ -15,8 +15,8 @@ const keygeneration = async (ip) => {
     },
   });
 
-  await fs.writeFileSync("key_authority/key/" + ip + "private.pem", privateKey);
-  await fs.writeFileSync("key_authority/key/" + ip + "public.pem", publicKey);
+  await fs.writeFileSync("/key_auth/key/" + ip + "private.pem", privateKey);
+  await fs.writeFileSync("/key_auth/key/" + ip + "public.pem", publicKey);
 };
 
 function keydeletion(ip) {

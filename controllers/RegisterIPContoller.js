@@ -34,14 +34,15 @@ class IPController {
         }
     }
     async checkIP(req, res) {
-        const ip = req.params.ip;
+        const { ip,sign,data } = req.body;
         try {
             // Check if the IP address is registered
             const existingIP = await RegisteredIP.findOne({ where: { ip } });
             const blacklistedIP = await BlacklistedIP.findOne({ where: { ip } });
-            // const spoofyes = verifyDigitalSignature()
+            // const spoofyes = verifyDigitalSignature(data, sign, 'key_auth\\key\\public.pem');
+            const spoofyes = sign === process.env.AUTH_KEY ? false : true;
             // Send true if the IP address is registered, otherwise send false
-            res.json({ regyes: existingIP ? true : false, blockyes: blacklistedIP ? true : false });
+            res.json({ regyes: existingIP ? true : false, blockyes: blacklistedIP ? true : false ,spoofyes:spoofyes});
         } catch (error) {
             logger.error('Error checking IP address:', error);
             res.status(500).json({ error: 'Internal server error' });
@@ -54,7 +55,7 @@ class IPController {
             // Check if IP already exists
             const existingIP = await BlacklistedIP.findOne({ where: { ip } });
             if (existingIP) {
-                return res.status(400).json({ error: 'IP already blacklisted' });
+                return res.status(201).json({ error: 'IP already blacklisted' });
             }
 
             // Create new blacklisted IP
@@ -82,12 +83,14 @@ class IPController {
     async verifyOTP(req, res) {
         try {
             const { otp,ip } = req.body;
-            if (!otp === localStorage.getItem(ip)) {
+            if (otp === localStorage.getItem(ip)) {
                 const blockIP = await BlacklistedIP.findOne({ ip });
                 const regIP = await RegisteredIP.create({ ip });
                 await blockIP.destroy();
+                return res.status(200).json({ message: 'IP whitelisting succesfull' });
+            } else {
+                return res.status(200).json({ message: 'IP whitelisting failed Retry again' });
             }
-            return res.status(200).json({ message: 'IP whitelisting succesfull' });
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Internal server error' });

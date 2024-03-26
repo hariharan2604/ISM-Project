@@ -2,9 +2,9 @@ const dgram = require('dgram');
 const WeatherData = require('../models/WeatherData');
 const { validateIpAddress } = require('./ips');
 const logger = require('./Logger');
-
 const udpServer = dgram.createSocket('udp4');
 const UDP_PORT = process.env.UDP_PORT;
+const axios = require('axios');
 
 udpServer.on('error', (err) => {
     logger.error(`UDP Server error:\n${err.stack}`);
@@ -13,27 +13,38 @@ udpServer.on('error', (err) => {
 
 udpServer.on('message',async (msg, rinfo) => {
     const data = JSON.parse(msg.toString());
-    const validIP = await validateIpAddress(rinfo.address);
-
+    // console.log(data);
+    const validIP = await validateIpAddress(rinfo.address,data,data.sign);
     if (!validIP.regyes) {
-        const response = await axios.post('http://localhost:3000/manage/blacklistip', { ip: ipAddress });
-        if (validIP.blockyes) {
-            logger.info(` Request from Blacklisted IP address detected: ${rinfo.address} \n Please revoke it to process requests.`)
+        try {
+            const response = await axios.post('http://localhost:3000/manage/blacklistip', { ip: rinfo.address });
+            if (validIP.blockyes) {
+                logger.info(` Blacklisted IP address detected: ${rinfo.address} \n Please revoke it to process requests.`)
+                return;
+            }
+            if (validIP.spoofyes) {
+                logger.info(` Spoofed IP address detected: ${rinfo.address} \n Further Requests are blocked`)
+                return;
+            }
+            logger.error(`Unauthorised IP address detected: ${rinfo.address}`);
             return;
+        } catch (error) {
+            logger.error(error)
         }
-        logger.error(`Spoofed IP address detected: ${rinfo.address}`);
-        return;
+    }
+    else {
+        WeatherData.create({
+            temperature: data.temperature,
+            humidity: data.humidity,
+            pressure: data.pressure
+        }).then(() => {
+            logger.info(`Weather data saved from ${rinfo.address}:`, data);
+        }).catch((err) => {
+            logger.error('Error saving weather data:', err);
+        });
     }
 
-    WeatherData.create({
-        temperature: data.temperature,
-        humidity: data.humidity,
-        pressure: data.pressure
-    }).then(() => {
-        logger.info(`Weather data saved from ${rinfo.address}:`, data);
-    }).catch((err) => {
-        logger.error('Error saving weather data:', err);
-    });
+    
 });
 
 udpServer.on('listening', () => {

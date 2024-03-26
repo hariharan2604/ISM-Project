@@ -17,10 +17,9 @@ def forge_and_send_udp_packet(src_ip, src_port, dst_ip, dst_port, payload):
 source_ip = "127.0.0.1"
 source_port = 10000
 destination_ip = "127.0.0.1"
-destination_port = 6000
+destination_port = 3001
 payload_data = {
-    "regno": "21BIT0381",
-    "sign":"NhuMHXHykxPAb/6Gzod5+HDA3PQ9is+Whx3qNHOTq1iBHC73ScRGhmVRJ450cExwjZ0/VuOTw+9QQOx12qopJUImP/Q+WormHZYUZT4dWB25cZdQGKuNtypE2sWrO+OBBt0Dw0SYYSgz0GKOMn37qfhTuaZNVXkmkgAOetRjYAyv8TJGdxy5mH+AMTSIdBBS5i1Nn8LQI8TTgDU87HywghEeoclonPGAUzkwQXEcU+ic8hhqBLuS4JsJYXiQizTQ+Xq8E7rrqFG6qyb6NzxUC2UYwKVcLLq2C2/pDaUWWepQ9eShcYa20YS2zyxc4H3PgB2up3xu7M2DXWUdi3093Q=="
+    "humidity":96.56999969,"pressure":676.8279364,"sign":"HEllo1255","temperature":20.76000023,
 }
 
 # Convert payload_data to JSON format
