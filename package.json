@@ -21,7 +21,8 @@
   },
   "scripts": {
     "start": "node --env-file=.env app.js",
-    "watch": "node --env-file=.env --watch app.js"
+    "watch": "node --env-file=.env --watch app.js",
+    "model":"py mlmodels/mlmodel.py --debug run"
   },
   "name": "ism",
   "version": "1.0.0",
