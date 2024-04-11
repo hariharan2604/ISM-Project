@@ -33,6 +33,7 @@ client.send(Buffer.from(encryptedText, 'hex'), PORT, HOST, (err) => {
     } else {
         console.log('Encrypted message sent to server');
     }
+    client.close();
 });
 
 client.on('message', (msg, rinfo) => {

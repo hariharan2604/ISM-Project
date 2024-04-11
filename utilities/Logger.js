@@ -9,16 +9,19 @@ const logger = winston.createLogger({
     ),
     transports: [
         // Log errors to error.log
-        new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+        new winston.transports.File({ filename: 'logs/error.log', level: 'error', format: winston.format.combine(winston.format.timestamp(), winston.format.json()) }),
         // Log all levels to combined.log
-        new winston.transports.File({ filename: 'logs/combined.log' })
+        new winston.transports.File({ filename: 'logs/combined.log', format: winston.format.combine(winston.format.timestamp(), winston.format.json()) })
     ]
 });
 
 // If we're not in production, log to the console as well
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
-        format: winston.format.simple() // Simple format for console logs
+        format: winston.format.combine(
+            winston.format.colorize(), // Colorize the output
+            winston.format.simple() // Simple format for console logs
+        )
     }));
 }
 

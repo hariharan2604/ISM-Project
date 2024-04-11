@@ -17,7 +17,8 @@ udpServer.on('message', async (msg, rinfo) => {
     try {
        
         if (validIP.blockyes) {
-            logger.info(` Blacklisted IP address detected: ${rinfo.address} \n Please revoke it to process requests.`)
+            logger.error(` Blacklisted IP address detected: ${rinfo.address}.
+            Please revoke it to process requests.`)
             return;
         }
         if (!validIP.regyes) {
@@ -25,7 +26,8 @@ udpServer.on('message', async (msg, rinfo) => {
             return;
         }
         else if (sp.spoof) {
-            logger.info(` Spoofed IP address detected: ${rinfo.address} \n Further Requests are blocked`);
+            logger.error(`Spoofed IP address detected: ${rinfo.address}.
+            Further Requests are blocked`);
             await axios.post('http://localhost:3000/manage/blacklistip', { ip: rinfo.address });
             return;
         }
