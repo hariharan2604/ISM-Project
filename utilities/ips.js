@@ -3,6 +3,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 
 const logger = require('./Logger');
+var CryptoJS = require("crypto-js");
 
 
 async function validateIpAddress(ip) {
@@ -11,17 +12,29 @@ async function validateIpAddress(ip) {
     });
     return response.data;
 }
-function decrypt(encryptedData, secretKey) {
-    const decipher = crypto.createDecipher('aes-256-cbc', secretKey);
-    let decrypted = decipher.update(encryptedData);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return decrypted.toString('utf8');
+
+function decrypt(msg) {
+    var esp8266_msg = msg.toString('hex');
+    var esp8266_iv = process.env.IV;
+
+    var AESKey = process.env.SECRET;
+
+    var plain_iv = Buffer.from(esp8266_iv, 'base64').toString('hex');
+    var iv = CryptoJS.enc.Hex.parse(plain_iv);
+    var key = CryptoJS.enc.Hex.parse(AESKey);
+
+
+    // Decrypt
+    var bytes = CryptoJS.AES.decrypt(esp8266_msg, key, { iv: iv });
+    var plaintext = bytes.toString(CryptoJS.enc.Base64);
+    var decoded_b64msg = Buffer.from(plaintext, 'base64').toString('ascii');
+    var decoded_msg = Buffer.from(decoded_b64msg, 'base64').toString('ascii');
+    return decoded_msg;
 }
+
 function checkAuthenticity(msg) {
     try {
-
-        const decryptedText = decrypt(msg, process.env.SECRET);
-
+        const decryptedText = decrypt(Buffer.from(msg,'hex').toString());
         const sensorData = JSON.parse(decryptedText);
         logger.info('Received sensor data:', sensorData);
         return { spoof: false, data: sensorData };

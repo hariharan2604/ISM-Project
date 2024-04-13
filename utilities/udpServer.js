@@ -51,4 +51,4 @@ udpServer.on('listening', () => {
     logger.info(`UDP Server listening on ${address.address}:${address.port}`);
 });
 
-udpServer.bind(UDP_PORT);
+udpServer.bind(UDP_PORT,'192.168.86.199');
