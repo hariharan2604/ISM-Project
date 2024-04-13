@@ -5,23 +5,20 @@ class UserController {
         const { username, email, password } = req.body;
 
         try {
-            // Create a new user record in the database
-            // const hashedPassword = await bcrypt.hash(password, 10);
             const oldUser = await User.findOne({ where: { username, email } })
             if (!oldUser) {
-                const newUser = await User.create({
+                await User.create({
                     username: username,
                     email: email,
                     password: password
                 });
-                res.status(201).json(newUser);
+                res.status(201).json({code:201,message:"User created"});
             }
             const message = "Username or email already exists";
-            res.status(200).json({ message });
-            // Respond with the created user data
+            res.status(200).json({ code:200,message:message });
         } catch (error) {
             logger.error('Error creating user:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ code:500,error: 'Internal server error' });
         }
     }
 }

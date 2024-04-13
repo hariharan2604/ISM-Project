@@ -11,7 +11,7 @@ function encrypt(text, secretKey) {
 
 const client = dgram.createSocket('udp4');
 const secretKey = process.env.SECRET; // Same secret key used for encryption
-const HOST = '192.168.86.199';
+const HOST = '127.0.0.1';
 const PORT = process.env.UDP_PORT;
 
 const sensorData = {

@@ -34,13 +34,13 @@ function decrypt(msg) {
 
 function checkAuthenticity(msg) {
     try {
-        const decryptedText = decrypt(Buffer.from(msg,'hex').toString());
+        const decryptedText = decrypt(Buffer.from(msg, 'hex').toString());
         const sensorData = JSON.parse(decryptedText);
-        logger.info('Received sensor data:', sensorData);
+        console.log('Received sensor data:', sensorData);
         return { spoof: false, data: sensorData };
     } catch (error) {
         logger.error('Error decrypting message:', error);
-        return { spoof: true, data: null };
+        return;
     }
 }
 

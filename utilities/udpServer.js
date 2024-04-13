@@ -1,6 +1,6 @@
 const dgram = require('dgram');
 const WeatherData = require('../models/WeatherData');
-const { validateIpAddress,checkAuthenticity } = require('./ips');
+const { validateIpAddress, checkAuthenticity } = require('./ips');
 const logger = require('./Logger');
 const udpServer = dgram.createSocket('udp4');
 const UDP_PORT = process.env.UDP_PORT;
@@ -15,20 +15,13 @@ udpServer.on('message', async (msg, rinfo) => {
     const validIP = await validateIpAddress(rinfo.address);
     const sp = checkAuthenticity(msg);
     try {
-       
+
         if (validIP.blockyes) {
-            logger.error(` Blacklisted IP address detected: ${rinfo.address}.
-            Please revoke it to process requests.`)
+            logger.info(`Blacklisted IP address detected: ${rinfo.address}. Please revoke it to process requests.`);
             return;
         }
         if (!validIP.regyes) {
-            logger.error(`Unauthorised IP address detected: ${rinfo.address}`);
-            return;
-        }
-        else if (sp.spoof) {
-            logger.error(`Spoofed IP address detected: ${rinfo.address}.
-            Further Requests are blocked`);
-            await axios.post('http://localhost:3000/manage/blacklistip', { ip: rinfo.address });
+            logger.info(`Unauthorised IP address detected: ${rinfo.address}.`);
             return;
         }
         else {
@@ -41,14 +34,17 @@ udpServer.on('message', async (msg, rinfo) => {
         }
 
     } catch (error) {
-        logger.error(error)
+        logger.info(`Spoofed IP address detected: ${rinfo.address}.Further Requests are blocked`);
+        await axios.post('http://localhost:3000/manage/blacklistip', { ip: rinfo.address });
+        return;
     }
 }
 );
 
 udpServer.on('listening', () => {
     const address = udpServer.address();
-    logger.info(`UDP Server listening on ${address.address}:${address.port}`);
+    console.log(`UDP Server listening on ${address.address}:${address.port}`);
 });
 
-udpServer.bind(UDP_PORT,'192.168.86.199');
+// udpServer.bind(UDP_PORT, '192.168.86.199');
+udpServer.bind(UDP_PORT);

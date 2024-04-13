@@ -11,8 +11,8 @@ def get_data_from_server():
     try:
         url = 'http://localhost:3000/forecast/weather'
         data = request.json
-        humidity = int(data.get('humidity'))
-        pressure = int(data.get('pressure'))
+        humidity = float(data.get('humidity'))
+        pressure = float(data.get('pressure'))
         response = requests.get(url)
         if response.status_code == 200:
             server_data = response.json()

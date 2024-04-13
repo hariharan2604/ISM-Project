@@ -8,27 +8,24 @@ class AuthController {
         const { username, password } = req.body;
 
         try {
-            // Find the user by email
             const user = await User.findOne({ where: { username } });
 
             if (!user) {
-                return res.status(401).json({ error: 'User not found' });
+                return res.status(401).json({ code:400,error: 'User not found' });
             }
 
-            // Check if the provided password matches the hashed password in the database
-            // const passwordMatch = await bcrypt.compare(password, user.password);
-
+            
             if (!(password == user.password)) {
-                return res.status(401).json({ error: 'Invalid email or password' });
+                return res.status(401).json({ code:401,error: 'Invalid password' });
             }
             else {
                 const message = "Login Successfull";
-                res.status(200).json({ message });
+                return res.status(200).json({ code:200,message:message });
             }
 
         } catch (error) {
             logger.error('Error logging in:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ code:500,error: 'Internal server error' });
         }
     }
 }
