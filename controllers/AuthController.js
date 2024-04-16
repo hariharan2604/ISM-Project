@@ -1,7 +1,8 @@
-const e = require('express');
 const User = require('../models/User'); // Assuming you have a User model defined
 // const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const { LocalStorage } = require("node-localstorage");
+var localStorage = new LocalStorage('./scratch');
+
 
 class AuthController {
     async login(req, res) {
@@ -11,21 +12,22 @@ class AuthController {
             const user = await User.findOne({ where: { username } });
 
             if (!user) {
-                return res.status(401).json({ code:400,error: 'User not found' });
+                return res.status(200).json({ code:400,message: 'User not found' });
             }
 
             
             if (!(password == user.password)) {
-                return res.status(401).json({ code:401,error: 'Invalid password' });
+                return res.status(200).json({ code:401,message: 'Invalid password' });
             }
             else {
                 const message = "Login Successfull";
+                localStorage.setItem('email', user.email);
                 return res.status(200).json({ code:200,message:message });
             }
 
         } catch (error) {
             logger.error('Error logging in:', error);
-            res.status(500).json({ code:500,error: 'Internal server error' });
+            res.status(200).json({ code:500,message: 'Internal server error' });
         }
     }
 }

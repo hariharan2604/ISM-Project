@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const udpServer = require("./utilities/udpServer");
 const app = express();
+const cors = require('cors');
 const PORT = process.env.PORT;
 const forecast = require("./routes/forecast");
 const auth = require("./routes/auth")
@@ -9,6 +10,7 @@ const registerip = require("./routes/regip")
 const logs = require("./routes/logs")
 const sequelize = require("./db/database");
 sequelize.authenticate().then();
+app.use(cors());
 app.use(bodyParser.json());
 
 

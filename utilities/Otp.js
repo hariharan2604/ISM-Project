@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const logger = require("./Logger");
+
 async function sendOTP(email, otp, address) {
   try {
     // Create a transporter object using SMTP transport
@@ -78,4 +79,74 @@ async function sendOTP(email, otp, address) {
   }
 }
 
-module.exports = { sendOTP };
+async function sendAlert(email, spoofedAddress) {
+  try {
+    let transporter = nodemailer.createTransport({
+      host: 'smtp-relay.brevo.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+      }
+    });
+
+    const htmlContent = `<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        text-align: center;
+        color: #ff0000;
+      }
+      p {
+        text-align: center;
+        font-size: 18px;
+        color: #333333;
+        line-height: 1.5;
+      }
+      .spoofed-address {
+        font-size: 20px;
+        color: #ff0000;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Alert: Spoofed Address Detction</h2>
+      <p>A spoofed IP address <span class="spoofed-address">${spoofedAddress}</span> was detected and Blacklisted.</p>
+      <p>Please Reverify to Abort Blacklisting.</p>
+    </div>
+  </body>
+</html>`;
+
+    const mailOptions = {
+      from: 'weathermonitor@gmail.com',
+      to: email,
+      subject: 'Alert: Spoofed Address Detection',
+      html: htmlContent
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    console.log('Alert email sent successfully to:', email);
+  } catch (error) {
+    logger.error('Error sending alert email:', error);
+  }
+}
+
+module.exports = { sendOTP, sendAlert };

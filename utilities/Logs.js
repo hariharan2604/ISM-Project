@@ -20,7 +20,7 @@ function processLogs(callback) {
         try {
             const logEntry = JSON.parse(line);
             if (logEntry.level === 'info') {
-                logArray.push({ message: logEntry.message });
+                logArray.push({ message: logEntry.message,timestamp:logEntry.timestamp });
                 console.log(logEntry.message);
             }
         } catch (error) {

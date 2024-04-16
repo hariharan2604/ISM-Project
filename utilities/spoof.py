@@ -14,9 +14,9 @@ def forge_and_send_udp_packet(src_ip, src_port, dst_ip, dst_port, payload):
     # Send the packet
     send(packet)
 
-source_ip = "192.168.86.96"
+source_ip = "192.168.1.9"
 source_port = 10000
-destination_ip = "192.168.86.133"
+destination_ip = "192.168.1.9"
 destination_port = 3001
 payload_data = {
     "humidity":96.56999969,"pressure":676.8279364,"temperature":20.76000023,
